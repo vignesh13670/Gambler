@@ -1,93 +1,64 @@
-import React, { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { BookOpen, Sparkles, Dices } from "lucide-react";
-
-const MOODS = [
-  {
-    key: "cozy",
-    label: "Cozy",
-    emoji: "☕",
-    vibe: "soft, warm, comforting reads",
-    suggestions: ["A gentle romance", "A comforting classic", "A feel-good small-town story"],
-  },
-  {
-    key: "thrilling",
-    label: "Thrilling",
-    emoji: "⚡",
-    vibe: "fast, tense, impossible to put down",
-    suggestions: ["A mystery thriller", "A crime novel", "A survival story"],
-  },
-  {
-    key: "adventurous",
-    label: "Adventurous",
-    emoji: "🗺️",
-    vibe: "quests, travel, discovery, action",
-    suggestions: ["Epic fantasy", "Action-packed sci-fi", "A journey novel"],
-  },
-  {
-    key: "romantic",
-    label: "Romantic",
-    emoji: "💘",
-    vibe: "heartfelt, emotional, character-driven",
-    suggestions: ["A slow-burn romance", "A rom-com", "A bittersweet love story"],
-  },
-  {
-    key: "dark",
-    label: "Dark",
-    emoji: "🖤",
-    vibe: "moody, gothic, intense",
-    suggestions: ["Dark academia", "A gothic novel", "A psychological drama"],
-  },
-  {
-    key: "curious",
-    label: "Curious",
-    emoji: "🧠",
-    vibe: "thought-provoking and idea-rich",
-    suggestions: ["Popular science", "Philosophy", "A literary novel with big themes"],
-  },
-  {
-    key: "funny",
-    label: "Funny",
-    emoji: "😂",
-    vibe: "light, witty, playful",
-    suggestions: ["A comic novel", "Humorous memoir", "A smart rom-com"],
-  },
-  {
-    key: "magical",
-    label: "Magical",
-    emoji: "✨",
-    vibe: "whimsical, strange, enchanting",
-    suggestions: ["Magical realism", "Fairy-tale fantasy", "An imaginative middle-grade read"],
-  },
-];
-
-const REEL_SYMBOLS = [
-  "☕",
-  "⚡",
-  "🗺️",
-  "💘",
-  "🖤",
-  "🧠",
-  "😂",
-  "✨",
-  "📚",
-  "🎲",
-  "🌙",
-  "🌈",
-];
-
-function randomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function Reel({ value, spinning }) {
-  return (
-    <div className="relative h-28 w-24 overflow-hidden rounded-2xl border bg-white/70 shadow-inner backdrop-blur">
-      <motion.div
-        key={spinning ? `spin-${Math.random()}` : `stop-${value}`}
-        initial={{ y: 0 }}
-        animate={{ y: spinning ? [-8, -120, -240, -360, -480] : 0 }}
-        transition={{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Mood Slot Machine</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #fde7e7, #fff4db, #ffe8cf);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #1f2937;
+    }
+    .app {
+      width: 100%;
+      max-width: 900px;
+    }
+    .title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .title h1 {
+      margin: 0 0 10px;
+      font-size: 40px;
+    }
+    .title p {
+      margin: 0;
+      font-size: 18px;
+      color: #4b5563;
+    }
+    .machine {
+      background: rgba(255,255,255,0.8);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    }
+    .machine-inner {
+      background: #111827;
+      color: white;
+      border-radius: 24px;
+      padding: 28px;
+    }
+    .reels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .reel {
+      height: 120px;
+      border-radius: 20px;
+      background: white;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      box-shadow: inset
