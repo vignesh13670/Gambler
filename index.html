@@ -19,7 +19,7 @@
     }
     .app {
       width: 100%;
-      max-width: 900px;
+      max-width: 980px;
     }
     .title {
       text-align: center;
@@ -98,6 +98,7 @@
       align-items: center;
       gap: 16px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .mood-emoji {
       font-size: 54px;
@@ -116,6 +117,40 @@
     .hint {
       color: #6b7280;
     }
+    .books {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .book-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 14px;
+      background: #ffffff;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+    }
+    .book-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .book-card p {
+      margin: 6px 0;
+      color: #4b5563;
+      font-size: 14px;
+    }
+    .book-card a {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #b45309;
+      font-weight: bold;
+    }
+    .status {
+      margin-top: 12px;
+      color: #6b7280;
+      font-size: 14px;
+    }
     @media (max-width: 640px) {
       .title h1 { font-size: 30px; }
       .reel { font-size: 42px; height: 100px; }
@@ -127,7 +162,7 @@
   <div class="app">
     <div class="title">
       <h1>3-Slot Book Mood Machine</h1>
-      <p>Press spin, get a mood, then choose a book that matches it.</p>
+      <p>Press spin, get a mood, then fetch matching books from online.</p>
     </div>
 
     <div class="machine">
@@ -155,81 +190,57 @@
         label: "Cozy",
         emoji: "☕",
         vibe: "Soft, warm, comforting reads.",
-        suggestions: [
-          "A gentle romance",
-          "A comforting classic",
-          "A feel-good small-town story"
-        ]
+        suggestions: ["A gentle romance", "A comforting classic", "A feel-good small-town story"],
+        queries: ["cozy romance", "comfort read fiction", "feel good novel"]
       },
       {
         label: "Thrilling",
         emoji: "⚡",
         vibe: "Fast, tense, impossible to put down.",
-        suggestions: [
-          "A mystery thriller",
-          "A crime novel",
-          "A survival story"
-        ]
+        suggestions: ["A mystery thriller", "A crime novel", "A survival story"],
+        queries: ["thriller novel", "mystery suspense", "crime fiction"]
       },
       {
         label: "Adventurous",
         emoji: "🗺️",
         vibe: "Quests, travel, discovery, action.",
-        suggestions: [
-          "Epic fantasy",
-          "Action-packed sci-fi",
-          "A journey novel"
-        ]
+        suggestions: ["Epic fantasy", "Action-packed sci-fi", "A journey novel"],
+        queries: ["adventure novel", "epic fantasy", "action sci-fi"]
       },
       {
         label: "Romantic",
         emoji: "💘",
         vibe: "Heartfelt, emotional, character-driven.",
-        suggestions: [
-          "A slow-burn romance",
-          "A rom-com",
-          "A bittersweet love story"
-        ]
+        suggestions: ["A slow-burn romance", "A rom-com", "A bittersweet love story"],
+        queries: ["romance novel", "rom com book", "love story fiction"]
       },
       {
         label: "Dark",
         emoji: "🖤",
         vibe: "Moody, gothic, intense.",
-        suggestions: [
-          "Dark academia",
-          "A gothic novel",
-          "A psychological drama"
-        ]
+        suggestions: ["Dark academia", "A gothic novel", "A psychological drama"],
+        queries: ["dark academia", "gothic fiction", "psychological novel"]
       },
       {
         label: "Curious",
         emoji: "🧠",
         vibe: "Thought-provoking and idea-rich.",
-        suggestions: [
-          "Popular science",
-          "Philosophy",
-          "A literary novel with big themes"
-        ]
+        suggestions: ["Popular science", "Philosophy", "A literary novel with big themes"],
+        queries: ["popular science book", "philosophy book", "literary fiction ideas"]
       },
       {
         label: "Funny",
         emoji: "😂",
         vibe: "Light, witty, playful.",
-        suggestions: [
-          "A comic novel",
-          "A humorous memoir",
-          "A smart rom-com"
-        ]
+        suggestions: ["A comic novel", "A humorous memoir", "A smart rom-com"],
+        queries: ["funny novel", "humorous memoir", "witty fiction"]
       },
       {
         label: "Magical",
         emoji: "✨",
         vibe: "Whimsical, strange, enchanting.",
-        suggestions: [
-          "Magical realism",
-          "Fairy-tale fantasy",
-          "An imaginative middle-grade read"
-        ]
+        suggestions: ["Magical realism", "Fairy-tale fantasy", "An imaginative middle-grade read"],
+        queries: ["magical realism", "fairy tale fantasy", "whimsical fiction"]
       }
     ];
 
@@ -247,7 +258,50 @@
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function renderResult(mood) {
+    function pickSearchQuery(mood) {
+      return randomItem(mood.queries);
+    }
+
+    async function fetchBooksForMood(mood) {
+      const query = pickSearchQuery(mood);
+      const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&language=eng&limit=6`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Could not reach Open Library.");
+      }
+      const data = await response.json();
+      const docs = Array.isArray(data.docs) ? data.docs : [];
+
+      return docs
+        .filter(book => book.title && book.key)
+        .slice(0, 6)
+        .map(book => ({
+          title: book.title,
+          author: Array.isArray(book.author_name) ? book.author_name.join(", ") : "Unknown author",
+          year: book.first_publish_year || "Unknown year",
+          link: `https://openlibrary.org${book.key}`
+        }));
+    }
+
+    function renderResult(mood, books, statusText = "") {
+      const booksHtml = books.length
+        ? `
+          <div style="font-weight:bold; margin:18px 0 10px;">Books pulled from online</div>
+          <div class="books">
+            ${books.map(book => `
+              <div class="book-card">
+                <h3>${book.title}</h3>
+                <p><strong>Author:</strong> ${book.author}</p>
+                <p><strong>First published:</strong> ${book.year}</p>
+                <a href="${book.link}" target="_blank" rel="noopener noreferrer">View book</a>
+              </div>
+            `).join("")}
+          </div>
+        `
+        : `
+          <div class="status">No online books were found for this mood right now.</div>
+        `;
+
       resultBox.innerHTML = `
         <h2>Your selected mood</h2>
         <div class="mood-row">
@@ -257,14 +311,16 @@
             <div style="color:#4b5563; margin-top: 4px;">${mood.vibe}</div>
           </div>
         </div>
-        <div style="font-weight:bold; margin-bottom:10px;">Book ideas for this mood</div>
+        <div style="font-weight:bold; margin-bottom:10px;">Starter ideas for this mood</div>
         <div class="suggestions">
           ${mood.suggestions.map(item => `<div class="suggestion">${item}</div>`).join("")}
         </div>
+        ${booksHtml}
+        ${statusText ? `<div class="status">${statusText}</div>` : ""}
       `;
     }
 
-    function spin() {
+    async function spin() {
       if (spinning) return;
       spinning = true;
       spinButton.disabled = true;
@@ -291,10 +347,29 @@
         reel2.textContent = finalMood.emoji;
       }, 1900);
 
-      setTimeout(() => {
+      setTimeout(async () => {
         clearInterval(interval3);
         reel3.textContent = finalMood.emoji;
-        renderResult(finalMood);
+
+        resultBox.innerHTML = `
+          <h2>Your selected mood</h2>
+          <div class="mood-row">
+            <div class="mood-emoji">${finalMood.emoji}</div>
+            <div>
+              <div style="font-size: 28px; font-weight: bold;">${finalMood.label}</div>
+              <div style="color:#4b5563; margin-top: 4px;">${finalMood.vibe}</div>
+            </div>
+          </div>
+          <div class="status">Fetching book suggestions from online...</div>
+        `;
+
+        try {
+          const books = await fetchBooksForMood(finalMood);
+          renderResult(finalMood, books, "Powered by Open Library search.");
+        } catch (error) {
+          renderResult(finalMood, [], "Online fetch failed. This usually happens if the browser blocks local file requests or there is no internet.");
+        }
+
         spinning = false;
         spinButton.disabled = false;
         spinButton.textContent = "Spin for My Reading Mood";
