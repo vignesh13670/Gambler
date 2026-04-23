@@ -19,7 +19,7 @@
     }
     .app {
       width: 100%;
-      max-width: 980px;
+      max-width: 1100px;
     }
     .title {
       text-align: center;
@@ -35,10 +35,46 @@
       color: #4b5563;
     }
     .machine {
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.82);
       border-radius: 28px;
       padding: 24px;
       box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .machine::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.5), transparent 45%);
+      pointer-events: none;
+    }
+    .lights {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .light {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fcd34d;
+      box-shadow: 0 0 8px rgba(252, 211, 77, 0.7);
+      animation: blink 1.2s infinite alternate;
+    }
+    .light:nth-child(odd) { animation-delay: 0.2s; }
+    .light:nth-child(3n) { animation-delay: 0.4s; }
+    @keyframes blink {
+      from { transform: scale(0.9); opacity: 0.6; }
+      to { transform: scale(1.1); opacity: 1; }
+    }
+    .machine-shell {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 18px;
+      align-items: center;
     }
     .machine-inner {
       background: #111827;
@@ -66,25 +102,104 @@
     }
     .controls {
       text-align: center;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     button {
       border: none;
       border-radius: 16px;
       background: #f59e0b;
       color: white;
-      padding: 16px 28px;
-      font-size: 20px;
+      padding: 16px 24px;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 10px 20px rgba(245, 158, 11, 0.35);
+    }
+    button.secondary {
+      background: #374151;
+      box-shadow: 0 10px 20px rgba(55, 65, 81, 0.25);
     }
     button:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
+    .lever-zone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+    }
+    .lever-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .lever-bar {
+      width: 12px;
+      height: 120px;
+      background: linear-gradient(180deg, #9ca3af, #d1d5db);
+      border-radius: 999px;
+      position: relative;
+      transform-origin: top center;
+      transition: transform 0.25s ease;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.15);
+    }
+    .lever-bar.pulled {
+      transform: rotate(18deg);
+    }
+    .lever-knob {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #ef4444;
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.35);
+    }
+    .lever-base {
+      width: 48px;
+      height: 22px;
+      border-radius: 999px;
+      background: #9ca3af;
+    }
+    .small-note {
+      color: #6b7280;
+      font-size: 13px;
+      text-align: center;
+    }
+    .panel {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .box {
+      background: rgba(255,255,255,0.82);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    }
+    .box h3 {
+      margin-top: 0;
+    }
+    textarea, input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 12px;
+      font: inherit;
+      margin-top: 8px;
+      background: white;
+    }
     .result {
       margin-top: 24px;
-      background: rgba(255,255,255,0.82);
+      background: rgba(255,255,255,0.86);
       border-radius: 24px;
       padding: 22px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.08);
@@ -130,6 +245,14 @@
       background: #ffffff;
       box-shadow: 0 6px 16px rgba(0,0,0,0.05);
     }
+    .book-cover {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #f3f4f6;
+      margin-bottom: 10px;
+    }
     .book-card h3 {
       margin: 0 0 8px;
       font-size: 18px;
@@ -146,15 +269,52 @@
       color: #b45309;
       font-weight: bold;
     }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 0;
+    }
+    .tag {
+      background: #fff7ed;
+      color: #b45309;
+      border: 1px solid #fed7aa;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: bold;
+    }
     .status {
       margin-top: 12px;
       color: #6b7280;
       font-size: 14px;
     }
+    .winner {
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 0 4px rgba(245,158,11,0.12), 0 10px 18px rgba(245,158,11,0.12);
+    }
+    @media (max-width: 860px) {
+      .machine-shell {
+        grid-template-columns: 1fr;
+      }
+      .lever-zone {
+        order: -1;
+      }
+      .lever-wrap {
+        flex-direction: row;
+      }
+      .lever-bar {
+        height: 70px;
+      }
+      .panel {
+        grid-template-columns: 1fr;
+      }
+    }
     @media (max-width: 640px) {
       .title h1 { font-size: 30px; }
       .reel { font-size: 42px; height: 100px; }
       button { width: 100%; }
+      .book-cover { height: 220px; }
     }
   </style>
 </head>
@@ -162,18 +322,54 @@
   <div class="app">
     <div class="title">
       <h1>3-Slot Book Mood Machine</h1>
-      <p>Press spin, get a mood, then fetch matching books from online.</p>
+      <p>Pull the lever or press spin, get a mood, and let the machine suggest books from online.</p>
     </div>
 
     <div class="machine">
-      <div class="machine-inner">
-        <div class="reels">
-          <div class="reel" id="reel1">📚</div>
-          <div class="reel" id="reel2">🎲</div>
-          <div class="reel" id="reel3">📚</div>
+      <div class="lights" id="lights"></div>
+      <div class="machine-shell">
+        <div class="machine-inner">
+          <div class="reels">
+            <div class="reel" id="reel1">📚</div>
+            <div class="reel" id="reel2">🎲</div>
+            <div class="reel" id="reel3">📚</div>
+          </div>
+          <div class="controls">
+            <button id="spinButton">Spin for My Reading Mood</button>
+            <button id="oneBookButton" class="secondary">Pick ONE Book For Me</button>
+          </div>
         </div>
-        <div class="controls">
-          <button id="spinButton">Spin for My Reading Mood</button>
+
+        <div class="lever-zone">
+          <div class="lever-wrap">
+            <button id="leverButton" class="secondary" style="width:auto;">Pull Lever</button>
+            <div class="lever-bar" id="leverBar">
+              <div class="lever-knob"></div>
+            </div>
+            <div class="lever-base"></div>
+            <div class="small-note">Casino mode</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="box">
+          <h3>Custom moods</h3>
+          <p class="hint">Add one mood per line using this format:</p>
+          <p class="hint"><strong>Label | Emoji | vibe | query 1, query 2, query 3</strong></p>
+          <textarea id="customMoodInput" rows="7">Sad Girl Autumn | 🍂 | Melancholic, poetic, rainy-day reads. | melancholic fiction, sad girl autumn books, literary coming of age
+Academic Weapon | 📚 | Sharp, ambitious, brainy, disciplined reads. | dark academia, intellectual fiction, campus novel
+Delusional Main Character | 👑 | Dramatic, bold, glamorous, chaotic energy. | glamorous fiction, dramatic romance novel, main character energy books</textarea>
+          <button id="saveMoodsButton" style="margin-top:12px;">Save Custom Moods</button>
+          <div class="status" id="moodStatus">Your custom moods will be added to the machine.</div>
+        </div>
+
+        <div class="box">
+          <h3>Already read filter</h3>
+          <p class="hint">Paste book titles you already know, one per line. The machine will try to avoid repeats.</p>
+          <textarea id="seenInput" rows="7"></textarea>
+          <button id="saveSeenButton" style="margin-top:12px;">Save Read Books</button>
+          <div class="status" id="seenStatus">No books blocked yet.</div>
         </div>
       </div>
     </div>
@@ -185,7 +381,7 @@
   </div>
 
   <script>
-    const moods = [
+    const baseMoods = [
       {
         label: "Cozy",
         emoji: "☕",
@@ -244,64 +440,210 @@
       }
     ];
 
-    const symbols = ["☕", "⚡", "🗺️", "💘", "🖤", "🧠", "😂", "✨", "📚", "🎲", "🌙", "🌈"];
+    const symbols = ["☕", "⚡", "🗺️", "💘", "🖤", "🧠", "😂", "✨", "📚", "🎲", "🌙", "🌈", "🍂", "👑"];
 
     const reel1 = document.getElementById("reel1");
     const reel2 = document.getElementById("reel2");
     const reel3 = document.getElementById("reel3");
     const resultBox = document.getElementById("resultBox");
     const spinButton = document.getElementById("spinButton");
+    const oneBookButton = document.getElementById("oneBookButton");
+    const leverButton = document.getElementById("leverButton");
+    const leverBar = document.getElementById("leverBar");
+    const customMoodInput = document.getElementById("customMoodInput");
+    const saveMoodsButton = document.getElementById("saveMoodsButton");
+    const moodStatus = document.getElementById("moodStatus");
+    const seenInput = document.getElementById("seenInput");
+    const saveSeenButton = document.getElementById("saveSeenButton");
+    const seenStatus = document.getElementById("seenStatus");
+    const lights = document.getElementById("lights");
+
+    for (let i = 0; i < 20; i++) {
+      const light = document.createElement("div");
+      light.className = "light";
+      lights.appendChild(light);
+    }
 
     let spinning = false;
+    let pickSingleBookMode = false;
+    let customMoods = [];
+    let seenBooks = new Set();
+
+    function safeLoadJson(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
 
     function randomItem(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function normalizeTitle(title) {
+      return String(title || "").trim().toLowerCase();
+    }
+
+    function getAllMoods() {
+      return [...baseMoods, ...customMoods];
     }
 
     function pickSearchQuery(mood) {
       return randomItem(mood.queries);
     }
 
+    function buildSuggestionsFromLabel(label) {
+      return [
+        `A ${label.toLowerCase()} novel`,
+        `A book with strong ${label.toLowerCase()} energy`,
+        `Something that fully matches the ${label.toLowerCase()} vibe`
+      ];
+    }
+
+    function parseCustomMoods(text) {
+      return text
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split("|").map(part => part.trim());
+          if (parts.length < 4) return null;
+          const [label, emoji, vibe, queryString] = parts;
+          const queries = queryString.split(",").map(q => q.trim()).filter(Boolean);
+          if (!label || !emoji || !vibe || queries.length === 0) return null;
+          return {
+            label,
+            emoji,
+            vibe,
+            suggestions: buildSuggestionsFromLabel(label),
+            queries
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function saveCustomMoods() {
+      customMoods = parseCustomMoods(customMoodInput.value);
+      localStorage.setItem("slotMachineCustomMoods", JSON.stringify(customMoods));
+      moodStatus.textContent = `${customMoods.length} custom mood(s) saved.`;
+    }
+
+    function saveSeenBooks() {
+      const titles = seenInput.value
+        .split("\n")
+        .map(line => normalizeTitle(line))
+        .filter(Boolean);
+      seenBooks = new Set(titles);
+      localStorage.setItem("slotMachineSeenBooks", JSON.stringify([...seenBooks]));
+      seenStatus.textContent = `${seenBooks.size} book title(s) blocked from repeat suggestions.`;
+    }
+
+    function loadSavedData() {
+      customMoods = safeLoadJson("slotMachineCustomMoods", []);
+      const storedSeen = safeLoadJson("slotMachineSeenBooks", []);
+      seenBooks = new Set(storedSeen.map(normalizeTitle));
+
+      if (customMoods.length) {
+        customMoodInput.value = customMoods
+          .map(mood => `${mood.label} | ${mood.emoji} | ${mood.vibe} | ${mood.queries.join(", ")}`)
+          .join("\n");
+      }
+
+      if (seenBooks.size) {
+        seenInput.value = [...seenBooks].join("\n");
+        seenStatus.textContent = `${seenBooks.size} book title(s) blocked from repeat suggestions.`;
+      }
+
+      if (customMoods.length) {
+        moodStatus.textContent = `${customMoods.length} custom mood(s) loaded.`;
+      }
+    }
+
+    async function playSpinSound() {
+      try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [220, 330, 440, 660];
+        notes.forEach((frequency, index) => {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.connect(gain);
+          gain.connect(context.destination);
+          oscillator.type = "square";
+          oscillator.frequency.value = frequency;
+          const start = context.currentTime + index * 0.07;
+          const end = start + 0.06;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.08, start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, end);
+          oscillator.start(start);
+          oscillator.stop(end);
+        });
+      } catch {
+        // Ignore audio errors silently.
+      }
+    }
+
     async function fetchBooksForMood(mood) {
       const query = pickSearchQuery(mood);
-      const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&language=eng&limit=6`;
+      const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&language=eng&limit=18`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Could not reach Open Library.");
       }
+
       const data = await response.json();
       const docs = Array.isArray(data.docs) ? data.docs : [];
 
-      return docs
+      const mapped = docs
         .filter(book => book.title && book.key)
-        .slice(0, 6)
         .map(book => ({
           title: book.title,
           author: Array.isArray(book.author_name) ? book.author_name.join(", ") : "Unknown author",
           year: book.first_publish_year || "Unknown year",
-          link: `https://openlibrary.org${book.key}`
+          link: `https://openlibrary.org${book.key}`,
+          cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null
         }));
+
+      const unique = [];
+      const seenInResults = new Set();
+      for (const book of mapped) {
+        const normalized = normalizeTitle(book.title);
+        if (!normalized || seenInResults.has(normalized) || seenBooks.has(normalized)) continue;
+        seenInResults.add(normalized);
+        unique.push(book);
+      }
+
+      return unique.slice(0, 6);
     }
 
-    function renderResult(mood, books, statusText = "") {
-      const booksHtml = books.length
-        ? `
-          <div style="font-weight:bold; margin:18px 0 10px;">Books pulled from online</div>
-          <div class="books">
-            ${books.map(book => `
-              <div class="book-card">
-                <h3>${book.title}</h3>
-                <p><strong>Author:</strong> ${book.author}</p>
-                <p><strong>First published:</strong> ${book.year}</p>
-                <a href="${book.link}" target="_blank" rel="noopener noreferrer">View book</a>
-              </div>
-            `).join("")}
-          </div>
-        `
-        : `
-          <div class="status">No online books were found for this mood right now.</div>
-        `;
+    function renderBooks(books, singleMode) {
+      if (!books.length) {
+        return `<div class="status">No fresh online books were found for this mood right now.</div>`;
+      }
 
+      const chosenBooks = singleMode ? [randomItem(books)] : books;
+      const heading = singleMode ? "Your one lucky book" : "Books pulled from online";
+
+      return `
+        <div style="font-weight:bold; margin:18px 0 10px;">${heading}</div>
+        <div class="books">
+          ${chosenBooks.map(book => `
+            <div class="book-card ${singleMode ? "winner" : ""}">
+              ${book.cover ? `<img class="book-cover" src="${book.cover}" alt="Cover of ${book.title}">` : `<div class="book-cover" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;font-weight:bold;">No Cover</div>`}
+              <h3>${book.title}</h3>
+              <p><strong>Author:</strong> ${book.author}</p>
+              <p><strong>First published:</strong> ${book.year}</p>
+              <a href="${book.link}" target="_blank" rel="noopener noreferrer">View book</a>
+              ${singleMode ? `<div class="tag-row"><span class="tag">Chosen by fate</span><span class="tag">Main character read</span></div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderResult(mood, books, statusText = "", singleMode = false) {
       resultBox.innerHTML = `
         <h2>Your selected mood</h2>
         <div class="mood-row">
@@ -311,27 +653,43 @@
             <div style="color:#4b5563; margin-top: 4px;">${mood.vibe}</div>
           </div>
         </div>
-        <div style="font-weight:bold; margin-bottom:10px;">Starter ideas for this mood</div>
+        <div class="tag-row">
+          <span class="tag">Mood unlocked</span>
+          <span class="tag">No repeats</span>
+          <span class="tag">Online search</span>
+          ${singleMode ? `<span class="tag">One book mode</span>` : ""}
+        </div>
+        <div style="font-weight:bold; margin:18px 0 10px;">Starter ideas for this mood</div>
         <div class="suggestions">
           ${mood.suggestions.map(item => `<div class="suggestion">${item}</div>`).join("")}
         </div>
-        ${booksHtml}
+        ${renderBooks(books, singleMode)}
         ${statusText ? `<div class="status">${statusText}</div>` : ""}
       `;
     }
 
-    async function spin() {
+    function setLeverPulled(pulled) {
+      leverBar.classList.toggle("pulled", pulled);
+    }
+
+    async function startSpin(singleMode = false) {
       if (spinning) return;
       spinning = true;
+      pickSingleBookMode = singleMode;
       spinButton.disabled = true;
+      oneBookButton.disabled = true;
+      leverButton.disabled = true;
       spinButton.textContent = "Rolling...";
+      oneBookButton.textContent = singleMode ? "Choosing..." : "Pick ONE Book For Me";
+      setLeverPulled(true);
+      playSpinSound();
 
       resultBox.innerHTML = `
         <h2>Your selected mood</h2>
         <p class="hint">The machine is choosing your reading vibe...</p>
       `;
 
-      const finalMood = randomItem(moods);
+      const finalMood = randomItem(getAllMoods());
 
       const interval1 = setInterval(() => { reel1.textContent = randomItem(symbols); }, 90);
       const interval2 = setInterval(() => { reel2.textContent = randomItem(symbols); }, 120);
@@ -365,18 +723,28 @@
 
         try {
           const books = await fetchBooksForMood(finalMood);
-          renderResult(finalMood, books, "Powered by Open Library search.");
+          renderResult(finalMood, books, "Powered by Open Library search and cover images.", pickSingleBookMode);
         } catch (error) {
-          renderResult(finalMood, [], "Online fetch failed. This usually happens if the browser blocks local file requests or there is no internet.");
+          renderResult(finalMood, [], "Online fetch failed. This usually happens if the browser blocks local file requests or there is no internet.", pickSingleBookMode);
         }
 
         spinning = false;
         spinButton.disabled = false;
+        oneBookButton.disabled = false;
+        leverButton.disabled = false;
         spinButton.textContent = "Spin for My Reading Mood";
+        oneBookButton.textContent = "Pick ONE Book For Me";
+        setLeverPulled(false);
       }, 2400);
     }
 
-    spinButton.addEventListener("click", spin);
+    saveMoodsButton.addEventListener("click", saveCustomMoods);
+    saveSeenButton.addEventListener("click", saveSeenBooks);
+    spinButton.addEventListener("click", () => startSpin(false));
+    oneBookButton.addEventListener("click", () => startSpin(true));
+    leverButton.addEventListener("click", () => startSpin(false));
+
+    loadSavedData();
   </script>
 </body>
 </html>
